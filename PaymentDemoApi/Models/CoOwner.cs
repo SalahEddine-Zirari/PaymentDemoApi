@@ -22,8 +22,8 @@ namespace PaymentDemoApi.Models
             {
                 if (value < 0)
                     throw new ArgumentOutOfRangeException(nameof(value)); 
-                else
-                    _monthlyFee = value;
+
+                _monthlyFee = value;
             }
         }
         
