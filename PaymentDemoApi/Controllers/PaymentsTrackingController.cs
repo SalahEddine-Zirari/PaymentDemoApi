@@ -57,11 +57,6 @@ namespace PaymentDemoApi.Controllers
             NewMonthDetails.MonthNum = int.Parse(DateTime.Now.ToString("MM"));
             NewMonthDetails.AmmountPaid = AmmountPaid;
 
-            if(AmmountPaid<0)
-            {
-
-            }
-
             var CoOwnerData =await _context.CoOwners.FirstOrDefaultAsync(x=>x.Id==CoOwnerId);  
             if(CoOwnerData == null)
                 return BadRequest($"Unable to find a CoOwner with the Id: " + CoOwnerId);

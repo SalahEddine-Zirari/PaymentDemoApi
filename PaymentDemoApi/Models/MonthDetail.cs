@@ -10,14 +10,14 @@ namespace PaymentDemoApi.Models
         public int? CoOwnerId { get; set; }
         public int MonthNum { get; set; }
         public string IsPaid { get; set; } = null!;
-        private decimal? _amountPaid;
-        public decimal? AmountPaid { get => _amountPaid; 
+        private decimal? _ammountPaid;
+        public decimal? AmmountPaid{ get => _ammountPaid; 
             set
             {
-                if (value<0)
+                if (value<0) 
                     throw new ArgumentOutOfRangeException(nameof(value));
 
-                _amountPaid = value;
+                _ammountPaid = value;
 
 
 
