@@ -6,7 +6,7 @@ namespace PaymentDemoApi.Core.Repositories
     {
         public CoOwnerRepository(PaymentDemoContext context,ILogger logger):base(context, logger) {}
 
-        public override async Task<IEnumerable<CoOwner>> GetAllAsync()
+        public override async Task<IEnumerable<CoOwner>> GetAll()
         {
             try
             {
@@ -19,22 +19,10 @@ namespace PaymentDemoApi.Core.Repositories
             }
         }
 
-        public override async Task<bool> Add(CoOwner entity)
-        {
-            
-            try
-            {
-                return await Add(entity);
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, "{Repo} Add method error", typeof(CoOwnerRepository));
-                return false;
-            }
-        }
+        
 
 
-        public override async Task<bool> DeleteAsync(int id)
+        public override async Task<bool> Delete(int id)
         {
             try
             {
@@ -56,5 +44,6 @@ namespace PaymentDemoApi.Core.Repositories
             }
         }
 
+        
     }
 }

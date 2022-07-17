@@ -4,8 +4,8 @@ namespace PaymentDemoApi.Core.IConfiguration
 {
     public interface IUnitOfWork 
     {
-        ICoOwnerRepository CoOwners { get; }
-        IMonthDetailRepository MonthDetails { get; }
+        ICoOwnerRepository CoOwner { get; }
+        IMonthDetailRepository MonthDetail { get; }
 
         Task CompleteAsync();
     }

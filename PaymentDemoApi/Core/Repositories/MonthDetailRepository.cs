@@ -8,7 +8,7 @@ namespace PaymentDemoApi.Core.Repositories
         {
         }
 
-        public override async Task<IEnumerable<MonthDetail>> GetAllAsync()
+        public override async Task<IEnumerable<MonthDetail>> GetAll()
         {
             try
             {
@@ -36,7 +36,7 @@ namespace PaymentDemoApi.Core.Repositories
         }
 
 
-        public override async Task<bool> DeleteAsync(int id)
+        public override async Task<bool> Delete(int id)
         {
             try
             {

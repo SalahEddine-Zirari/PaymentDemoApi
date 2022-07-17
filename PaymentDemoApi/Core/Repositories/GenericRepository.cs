@@ -1,4 +1,5 @@
-﻿using PaymentDemoApi.IRepositories;
+﻿using Microsoft.EntityFrameworkCore;
+using PaymentDemoApi.IRepositories;
 
 namespace PaymentDemoApi.Core.Repositories
 {
@@ -8,33 +9,36 @@ namespace PaymentDemoApi.Core.Repositories
         protected DbSet<T> dbSet;
         protected readonly ILogger _logger;
 
-        public GenericRepository(PaymentDemoContext context, ILogger logger)
+        public GenericRepository(PaymentDemoContext context, ILogger logger )
         {
             _context= context;
             _logger= logger;
-            dbSet= context.Set<T>();
+           this.dbSet= context.Set<T>();
         }
-        public virtual async Task DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+       
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual async Task<T> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
         public virtual async Task<bool> Add(T entity)
         {
             await dbSet.AddAsync(entity);
             return true;
         }
 
-        public virtual async Task<bool> Insert(T entity)
+        public virtual async Task<IEnumerable<T>> GetAll()
+        {
+            return await dbSet.ToListAsync();
+        }
+
+        public virtual async Task<T> GetById(int id)
+        {
+            return await dbSet.FindAsync(id);
+        }
+
+        public virtual async Task Delete(int id)
+        {
+            return await dbSet.Remove(id); 
+        }
+
+        public Task<bool> Update(T entity)
         {
             throw new NotImplementedException();
         }

@@ -2,19 +2,29 @@ global using PaymentDemoApi.Models;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
-
-
+using PaymentDemoApi.Core.IConfiguration;
+using PaymentDemoApi.Core.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 
+builder.Services.AddDbContext<PaymentDemoContext>(options => options.UseSqlServer(
+    builder.Configuration.GetConnectionString("Connection")));
 builder.Services.AddControllers();
+//builder.Services.AddMvc(options =>
+//{
+//    options.SuppressAsyncSuffixInActionNames = true;
+//});
+
+//adding the unit of work to  the DI container
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<PaymentDemoContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("Connection")));
 
 var app = builder.Build();
 
@@ -32,3 +42,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+  
