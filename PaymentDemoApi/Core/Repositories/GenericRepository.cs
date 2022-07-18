@@ -35,7 +35,7 @@ namespace PaymentDemoApi.Core.Repositories
 
         public virtual async Task Delete(int id)
         {
-            return await dbSet.Remove(id); 
+            throw new NotImplementedException();
         }
 
         public Task<bool> Update(T entity)

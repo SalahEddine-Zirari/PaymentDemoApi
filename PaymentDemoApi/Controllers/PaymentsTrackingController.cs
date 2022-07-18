@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PaymentDemoApi.Core.IConfiguration;
 
 namespace PaymentDemoApi.Controllers
 {
@@ -9,27 +10,31 @@ namespace PaymentDemoApi.Controllers
     [ApiController]
     public class PaymentsTrackingController : ControllerBase
     {
-        
 
-        private readonly PaymentDemoContext _context;
-        public PaymentsTrackingController(PaymentDemoContext context)
+        private readonly ILogger<PaymentsTrackingController> _logger;
+        private readonly IUnitOfWork _unitOfWork;
+        public PaymentsTrackingController(ILogger<PaymentsTrackingController> logger, IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
 
         [HttpGet]
-        public async Task<ActionResult<List<MonthDetail>>> GetMonthDetails() => Ok(await _context.MonthDetails.ToListAsync());
-       
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _unitOfWork.MonthDetail.GetAll());
+        }
+
 
         [HttpGet("{CoOwnerId}")]
-        public  async Task<ActionResult<List<MonthDetail>>> GetMonthDetails(int CoOwnerId)
+        public async Task<IActionResult> GetMonthDetail(int id)
         {
-            var RequestedRow = await _context.MonthDetails.Where(x => x.CoOwnerId == CoOwnerId).ToListAsync();
-            if (RequestedRow == null)
-                return NotFound();
+            var monthDetail = await _unitOfWork.MonthDetail.GetById(id);
 
-            return Ok(RequestedRow);
+            if (monthDetail == null)
+                return NotFound();
+            return Ok(monthDetail);
         }
 
         [HttpGet("{TransactionId}")]
@@ -38,7 +43,7 @@ namespace PaymentDemoApi.Controllers
 
         public async Task<ActionResult> GetTrasanction(int TransactionId)
         {
-            var RequestedTransaction = await _context.MonthDetails.FirstAsync(x => x.TransactionId == TransactionId);
+            var RequestedTransaction = await _unitOfWork.MonthDetail.GetById(TransactionId);
 
             if (RequestedTransaction == null)
                 return NotFound();
@@ -48,35 +53,37 @@ namespace PaymentDemoApi.Controllers
 
 
         [HttpPost("{CoOwnerId}")]
-        public async Task<ActionResult> AddMonthDetail(int CoOwnerId,decimal AmmountPaid)
+        public async Task<ActionResult> AddMonthDetail(int CoOwnerId, decimal AmmountPaid)
         {
-            var NewMonthDetails = new MonthDetail();
+            var NewMonthDetail = new MonthDetail();
 
 
-            NewMonthDetails.CoOwnerId = CoOwnerId;
-            NewMonthDetails.MonthNum = int.Parse(DateTime.Now.ToString("MM"));
-            NewMonthDetails.AmmountPaid = AmmountPaid;
+            NewMonthDetail.CoOwnerId = CoOwnerId;
+            NewMonthDetail.MonthNum = int.Parse(DateTime.Now.ToString("MM"));
+            NewMonthDetail.AmmountPaid = AmmountPaid;
 
-            var CoOwnerData =await _context.CoOwners.FirstOrDefaultAsync(x=>x.Id==CoOwnerId);  
-            if(CoOwnerData == null)
+            var CoOwnerData = await _unitOfWork.CoOwner.GetById(CoOwnerId);
+            if (CoOwnerData == null)
                 return BadRequest($"Unable to find a CoOwner with the Id: " + CoOwnerId);
 
             CoOwnerData.Balance = AmmountPaid + CoOwnerData.Balance - CoOwnerData.MonthlyFee;
 
             if (CoOwnerData.Balance < 0)
-                NewMonthDetails.IsPaid = "false";          
-            else 
-                NewMonthDetails.IsPaid = "true";
+                NewMonthDetail.IsPaid = "false";
+            else
+                NewMonthDetail.IsPaid = "true";
 
-            _context.MonthDetails.Add(NewMonthDetails);
-            _context.CoOwners.Update(CoOwnerData);
+            await _unitOfWork.MonthDetail.Add(NewMonthDetail);
+            await _unitOfWork.CoOwner.Update(CoOwnerData);
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CompleteAsync();
 
             return Ok("Added successfully");
-            
-            
+
+
         }
+     
+
     }
 
     

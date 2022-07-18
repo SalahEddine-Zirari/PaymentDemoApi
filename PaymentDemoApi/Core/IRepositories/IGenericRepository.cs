@@ -5,8 +5,8 @@
         Task<IEnumerable<T>> GetAll();
         Task<T> GetById(int id);
         Task Delete(int id);
-        
         Task<bool> Add(T entity);
+        Task<bool> Update(T entity);
         
     }
 }

@@ -24,13 +24,13 @@ namespace PaymentDemoApi.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetItem(int id)
+        public async Task<IActionResult> GetCoOwner(int id)
         {
-            var CoOwner = await _unitOfWork.CoOwner.GetById(id);
+            var coOwner = await _unitOfWork.CoOwner.GetById(id);
 
-            if (CoOwner == null)
+            if (coOwner == null)
                 return NotFound();
-            return Ok(CoOwner);
+            return Ok(coOwner);
         }
 
         [HttpPost]
