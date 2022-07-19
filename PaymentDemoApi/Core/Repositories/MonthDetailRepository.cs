@@ -21,12 +21,13 @@ namespace PaymentDemoApi.Core.Repositories
             }
         }
 
-        public override async Task<bool> Add(MonthDetail entity)
+        public override bool Add(MonthDetail entity)
         {
 
             try
             {
-                return await Add(entity);
+                dbSet.Add(entity);
+                return true;
             }
             catch (Exception ex)
             {
@@ -57,5 +58,15 @@ namespace PaymentDemoApi.Core.Repositories
                 return false;
             }
         }
+
+        public Task<IEnumerable<MonthDetail>> GetByCoOwnerId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        
+
     }
 }

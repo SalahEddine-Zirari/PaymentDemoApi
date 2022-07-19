@@ -19,7 +19,7 @@ namespace PaymentDemoApi.Core.Repositories
             }
         }
 
-        
+        //public override async Task<IEnumerable<CoOwner>> Get
 
 
         public override async Task<bool> Delete(int id)

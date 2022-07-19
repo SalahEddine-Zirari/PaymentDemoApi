@@ -53,7 +53,7 @@ namespace PaymentDemoApi.Controllers
 
 
         [HttpPost("{CoOwnerId}")]
-        public async Task<ActionResult> AddMonthDetail(int CoOwnerId, decimal AmmountPaid)
+        public async Task<IActionResult> AddMonthDetail(int CoOwnerId, decimal AmmountPaid)
         {
             var NewMonthDetail = new MonthDetail();
 
@@ -82,9 +82,30 @@ namespace PaymentDemoApi.Controllers
 
 
         }
-     
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByCoOwner(int id)
+        {
+            var Result = _unitOfWork.MonthDetail.GetByCoOwnerId(id);
+            if (Result == null)
+                return BadRequest($"Unable to find a CoOwner with the Id: " + id);
+
+            return Ok(Result);
+
+        }
+
+        //[HttpDelete]
+        //public async Task<ActionResult> DeleteByCoOwnerId(int id)
+        //{
+        //    var CoOwnerPayments = _unitOfWork.MonthDetail.GetByCoOwnerId(id);
+        //    if (CoOwnerPayments == null)
+        //        return BadRequest($"Unable to find a CoOwner with the Id: " + id);
+
+
+
+        //}
+
 
     }
 
-    
+
 }
