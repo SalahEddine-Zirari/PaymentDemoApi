@@ -6,7 +6,7 @@ using PaymentDemoApi.Core.IConfiguration;
 namespace PaymentDemoApi.Controllers
 {
 
-    [Route("api/[controller]")]
+    [Route("api/PaymentsTracking")]
     [ApiController]
     public class PaymentsTrackingController : ControllerBase
     {
@@ -27,20 +27,10 @@ namespace PaymentDemoApi.Controllers
         }
 
 
-        [HttpGet("{CoOwnerId}")]
-        public async Task<IActionResult> GetMonthDetail(int id)
-        {
-            var monthDetail = await _unitOfWork.MonthDetail.GetById(id);
-
-            if (monthDetail == null)
-                return NotFound();
-            return Ok(monthDetail);
-        }
+      
 
         [HttpGet("{TransactionId}")]
-        //to be solved
-        //Microsoft.AspNetCore.Routing.Matching.AmbiguousMatchException: The request matched multiple endpoints.Matches: 
-
+      
         public async Task<ActionResult> GetTrasanction(int TransactionId)
         {
             var RequestedTransaction = await _unitOfWork.MonthDetail.GetById(TransactionId);
@@ -51,8 +41,19 @@ namespace PaymentDemoApi.Controllers
             return Ok(RequestedTransaction);
         }
 
+        [HttpGet("{CoOwnerId}/TransactionId")]
+        public async Task<IActionResult> GetByCoOwnerId(int CoOwnerId)
+        {
+            var Rows = await _unitOfWork.MonthDetail.GetRowsByCoOwnerId(CoOwnerId);
 
-        [HttpPost("{CoOwnerId}")]
+            if (Rows == null)
+                return BadRequest($"Unable to find a CoOwner with the Id: " + CoOwnerId);
+            return Ok(Rows);
+        }
+
+
+
+        [HttpPost("details")]
         public async Task<IActionResult> AddMonthDetail(int CoOwnerId, decimal AmmountPaid)
         {
             var NewMonthDetail = new MonthDetail();
@@ -82,27 +83,7 @@ namespace PaymentDemoApi.Controllers
 
 
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByCoOwner(int id)
-        {
-            var Result = _unitOfWork.MonthDetail.GetByCoOwnerId(id);
-            if (Result == null)
-                return BadRequest($"Unable to find a CoOwner with the Id: " + id);
-
-            return Ok(Result);
-
-        }
-
-        //[HttpDelete]
-        //public async Task<ActionResult> DeleteByCoOwnerId(int id)
-        //{
-        //    var CoOwnerPayments = _unitOfWork.MonthDetail.GetByCoOwnerId(id);
-        //    if (CoOwnerPayments == null)
-        //        return BadRequest($"Unable to find a CoOwner with the Id: " + id);
-
-
-
-        //}
+        
 
 
     }

@@ -4,7 +4,7 @@ using PaymentDemoApi.Core.IConfiguration;
 namespace PaymentDemoApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/CoOwnerManagement")]
     public class CoOwnerManagementController : ControllerBase
     {
         private readonly ILogger<CoOwnerManagementController> _logger;
@@ -23,17 +23,17 @@ namespace PaymentDemoApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCoOwner(int id)
+        [HttpGet("{CoOwnerId}")]
+        public async Task<IActionResult> GetCoOwner(int CoOwnerId)
         {
-            var coOwner = await _unitOfWork.CoOwner.GetById(id);
+            var coOwner = await _unitOfWork.CoOwner.GetById(CoOwnerId);
 
             if (coOwner == null)
                 return NotFound();
             return Ok(coOwner);
         }
 
-        [HttpPost]
+        [HttpPost("details")]
         
         public async Task<ActionResult> AddCoOwner(string name, decimal balance, decimal monthlyFee)
         {
@@ -55,87 +55,38 @@ namespace PaymentDemoApi.Controllers
         }
 
         
-        [HttpDelete]
-        public async Task<IActionResult> DeleteCoOwner(int id)
+        //[HttpDelete("{CoOwnerId}")]
+        //public async Task<IActionResult> DeleteCoOwner(int CoOwnerId)
+        //{
+        //    var coOwner = await _unitOfWork.CoOwner.GetById(CoOwnerId);
+        //    if (coOwner == null)
+        //        return BadRequest();
+        //    await _unitOfWork.CoOwner.Delete(CoOwnerId);
+        //    await _unitOfWork.CompleteAsync();
+
+        //    return Ok(coOwner);
+        //}
+
+        [HttpDelete("{CoOwnerId}")]
+        public async Task<IActionResult> DeleteCoOwner(int CoOwnerId)
         {
-            var coOwner = await _unitOfWork.CoOwner.GetById(id);
-            if (coOwner == null)
-                return BadRequest();
-            await _unitOfWork.CoOwner.Delete(id);
+            var CoOwner = await _unitOfWork.CoOwner.GetById(CoOwnerId);
+            
+            if (CoOwner == null)
+                return BadRequest("inexistant CoOwner");
+
+            var Transactions = await _unitOfWork.MonthDetail.GetAllTransByCo(CoOwnerId);
+
+            if (Transactions != null)
+            {
+                await _unitOfWork.MonthDetail.DeleteAllTransByCo(Transactions);
+            }
+            await _unitOfWork.CoOwner.Delete(CoOwnerId);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(coOwner);
+            return Ok("deleted succesfully");
         }
 
-      
-
-        //[HttpGet]
-        //public async Task<ActionResult<List<CoOwner>>> GetEveryCoOwner() => Ok(await _context.CoOwners.ToListAsync());
-
-
-        //[HttpGet("{CoOwnerId}")]
-        //public async Task<ActionResult> GetCoOwnerById(int CoOwnerId)
-        //{
-        //    var RequestedCoOwner = await _context.CoOwners.FirstAsync(x=>x.Id==CoOwnerId);
-
-        //    if (RequestedCoOwner == null) 
-        //        return NotFound();
-
-        //    return Ok(RequestedCoOwner);
-        //}
-
-
-
-        //[HttpPost]
-        //public async Task<ActionResult> AddCoOwner(string name,decimal balance,decimal MonthlyFee)
-        //{
-        //    var NewCoOwner = new CoOwner
-        //    {
-        //        Name = name,
-        //        Balance = balance,
-        //        MonthlyFee = MonthlyFee
-        //    };
-
-        //    _context.CoOwners.Add(NewCoOwner);
-        //    await _context.SaveChangesAsync();
-
-        //    return Ok(NewCoOwner);
-        //}
-
-
-
-        //[HttpPut]
-        //public async Task<ActionResult> EditCoOwner(int idCOToBeModified, string NewName,decimal NewMonthlyFee)
-        //{
-
-        //    var CoToBeUpdated = await _context.CoOwners.FirstAsync(x => x.Id == idCOToBeModified);
-
-        //    if (CoToBeUpdated == null)
-        //        return BadRequest($"Unable to find a CoOwner with the Id: "+idCOToBeModified);
-
-        //    CoToBeUpdated.Name = NewName;
-        //    CoToBeUpdated.MonthlyFee = NewMonthlyFee;
-
-        //     _context.CoOwners.Update(CoToBeUpdated);
-        //    await _context.SaveChangesAsync();
-
-        //    return Ok(CoToBeUpdated);
-        //}
-
-
-        //[HttpDelete]
-        //public async Task<ActionResult> DeleteCoOwner(int id)
-        //{
-        //    var CoToBeDeleted = await _context.CoOwners.FirstAsync(x => x.Id == id);
-
-        //    if (CoToBeDeleted == null)
-        //        return BadRequest($"Unable to find a CoOwner with the Id: " + id);
-
-        //    _context.CoOwners.Remove(CoToBeDeleted);
-        //    await _context.SaveChangesAsync();
-
-        //    return Ok("Deleted successfully");
-        //}
 
     }
 }

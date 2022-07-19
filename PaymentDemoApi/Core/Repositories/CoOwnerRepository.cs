@@ -19,7 +19,7 @@ namespace PaymentDemoApi.Core.Repositories
             }
         }
 
-        //public override async Task<IEnumerable<CoOwner>> Get
+        
 
 
         public override async Task<bool> Delete(int id)
@@ -44,6 +44,22 @@ namespace PaymentDemoApi.Core.Repositories
             }
         }
 
-        
+        public override async Task<bool> Update(CoOwner entity)
+        {
+            try
+            {
+
+                dbSet.Update(entity);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{Repo} Update method error", typeof(CoOwnerRepository));
+                return false;
+            }
+        }
+
+      
+
     }
 }

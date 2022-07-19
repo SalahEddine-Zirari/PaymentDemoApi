@@ -3,5 +3,6 @@
     public interface ICoOwnerRepository : IGenericRepository<CoOwner>
     {
 
+
     }
 }
