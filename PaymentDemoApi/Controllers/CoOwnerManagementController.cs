@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using PaymentDemoApi.Core.IConfiguration;
+using PaymentDemoApi.Core.Services;
 
 namespace PaymentDemoApi.Controllers
+
+    //use services
 {
     [ApiController]
     [Route("api/CoOwnerManagement")]
@@ -9,18 +12,23 @@ namespace PaymentDemoApi.Controllers
     {
         private readonly ILogger<CoOwnerManagementController> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICoOwnerService _CoService;
 
-        public CoOwnerManagementController(ILogger<CoOwnerManagementController> logger,IUnitOfWork unitOfWork)
+        public CoOwnerManagementController(ILogger<CoOwnerManagementController> logger,IUnitOfWork unitOfWork, ICoOwnerService CoService)
         {
+            
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _CoService = CoService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            return Ok(await _unitOfWork.CoOwner.GetAll());
-        }
+        [HttpGet] 
+        public Task<IEnumerable<CoOwner>> GetAll() => _CoService.GetAllCo();
+
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    return Ok(await _unitOfWork.CoOwner.GetAll());
+        //}
 
 
         [HttpGet("{CoOwnerId}")]
@@ -54,19 +62,7 @@ namespace PaymentDemoApi.Controllers
             return new JsonResult("Something went wrong") { StatusCode = 500 };
         }
 
-        
-        //[HttpDelete("{CoOwnerId}")]
-        //public async Task<IActionResult> DeleteCoOwner(int CoOwnerId)
-        //{
-        //    var coOwner = await _unitOfWork.CoOwner.GetById(CoOwnerId);
-        //    if (coOwner == null)
-        //        return BadRequest();
-        //    await _unitOfWork.CoOwner.Delete(CoOwnerId);
-        //    await _unitOfWork.CompleteAsync();
-
-        //    return Ok(coOwner);
-        //}
-
+       
         [HttpDelete("{CoOwnerId}")]
         public async Task<IActionResult> DeleteCoOwner(int CoOwnerId)
         {
