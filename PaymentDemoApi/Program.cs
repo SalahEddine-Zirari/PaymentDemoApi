@@ -4,6 +4,8 @@ global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
 using PaymentDemoApi.Core.IConfiguration;
 using PaymentDemoApi.Core.Data;
+using PaymentDemoApi.Core.Services;
+using PaymentDemoApi.Core.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,13 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<PaymentDemoContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("Connection")));
 builder.Services.AddControllers();
-//builder.Services.AddMvc(options =>
-//{
-//    options.SuppressAsyncSuffixInActionNames = true;
-//});
+
+builder.Services.AddTransient<ICoOwnerService,CoOwnerService>();
+builder.Services.AddTransient<IMonthDetailService, MonthDetailService>();
 
 //adding the unit of work to  the DI container
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+
 
 
 

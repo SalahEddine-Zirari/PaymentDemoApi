@@ -23,65 +23,24 @@ namespace PaymentDemoApi.Controllers
         }
 
         [HttpGet] 
-        public Task<IEnumerable<CoOwner>> GetAll() => _CoService.GetAllCo();
-
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    return Ok(await _unitOfWork.CoOwner.GetAll());
-        //}
+        public async Task<IEnumerable<CoOwner>> GetAll() =>await _CoService.GetAllCo();
 
 
         [HttpGet("{CoOwnerId}")]
-        public async Task<IActionResult> GetCoOwner(int CoOwnerId)
-        {
-            var coOwner = await _unitOfWork.CoOwner.GetById(CoOwnerId);
-
-            if (coOwner == null)
-                return NotFound();
-            return Ok(coOwner);
-        }
+        public async Task<CoOwner> GetCoOwner(int CoOwnerId) =>  await _CoService.GetCoOwnerById(CoOwnerId);
+       
 
         [HttpPost("details")]
         
-        public async Task<ActionResult> AddCoOwner(string name, decimal balance, decimal monthlyFee)
-        {
-            var coOwner = new CoOwner()
-            {
-                Name = name,
-                Balance = balance,
-                MonthlyFee = monthlyFee
-            };
-            if (ModelState.IsValid)
-            {
-                await _unitOfWork.CoOwner.Add(coOwner);
-                await _unitOfWork.CompleteAsync();
+        public async Task<CoOwner> AddCoOwner(string name, decimal balance, decimal monthlyFee) =>await _CoService.AddCoOwner(name, balance, monthlyFee);
 
-                return Ok(coOwner);
-            }
 
-            return new JsonResult("Something went wrong") { StatusCode = 500 };
-        }
 
-       
+
+
         [HttpDelete("{CoOwnerId}")]
-        public async Task<IActionResult> DeleteCoOwner(int CoOwnerId)
-        {
-            var CoOwner = await _unitOfWork.CoOwner.GetById(CoOwnerId);
-            
-            if (CoOwner == null)
-                return BadRequest("inexistant CoOwner");
-
-            var Transactions = await _unitOfWork.MonthDetail.GetAllTransByCo(CoOwnerId);
-
-            if (Transactions != null)
-            {
-                await _unitOfWork.MonthDetail.DeleteAllTransByCo(Transactions);
-            }
-            await _unitOfWork.CoOwner.Delete(CoOwnerId);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok("deleted succesfully");
-        }
+        public async Task<string> DeleteCoOwner(int CoOwnerId) =>await _CoService.DeleteCoOwner(CoOwnerId);
+       
 
 
     }

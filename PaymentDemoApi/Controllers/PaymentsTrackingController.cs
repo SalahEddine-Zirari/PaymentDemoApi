@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PaymentDemoApi.Core.IConfiguration;
+using PaymentDemoApi.Core.Services.Interfaces;
 
 namespace PaymentDemoApi.Controllers
 {
@@ -15,78 +16,33 @@ namespace PaymentDemoApi.Controllers
 
         private readonly ILogger<PaymentsTrackingController> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        public PaymentsTrackingController(ILogger<PaymentsTrackingController> logger, IUnitOfWork unitOfWork)
+        private readonly IMonthDetailService _monthDetailService;
+        public PaymentsTrackingController(ILogger<PaymentsTrackingController> logger, IUnitOfWork unitOfWork,IMonthDetailService monthDetailService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _monthDetailService= monthDetailService;
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            return Ok(await _unitOfWork.MonthDetail.GetAll());
-        }
+        public async Task<IEnumerable<MonthDetail>> GetAll() =>await _monthDetailService.GetAll();
+       
 
-
-      
 
         [HttpGet("{TransactionId}")]
       
-        public async Task<ActionResult> GetTrasanction(int TransactionId)
-        {
-            var RequestedTransaction = await _unitOfWork.MonthDetail.GetById(TransactionId);
+        public async Task<MonthDetail> GetTrasanction(int TransactionId) =>await _monthDetailService.GetTrasanction(TransactionId);
 
-            if (RequestedTransaction == null)
-                return NotFound();
-
-            return Ok(RequestedTransaction);
-        }
 
         [HttpGet("{CoOwnerId}/TransactionId")]
-        public async Task<IActionResult> GetByCoOwnerId(int CoOwnerId)
-        {
-            var Rows = await _unitOfWork.MonthDetail.GetRowsByCoOwnerId(CoOwnerId);
-
-            if (Rows == null)
-                return BadRequest($"Unable to find a CoOwner with the Id: " + CoOwnerId);
-            return Ok(Rows);
-        }
-
+        public async Task<IEnumerable<MonthDetail>> GetByCoOwnerId(int CoOwnerId) => await _monthDetailService.GetByCoOwnerId(CoOwnerId);
+       
 
 
         [HttpPost("details")]
-        public async Task<IActionResult> AddMonthDetail(int CoOwnerId, decimal AmmountPaid)
-        {
-            var NewMonthDetail = new MonthDetail();
-
-
-            NewMonthDetail.CoOwnerId = CoOwnerId;
-            NewMonthDetail.MonthNum = int.Parse(DateTime.Now.ToString("MM"));
-            NewMonthDetail.AmmountPaid = AmmountPaid;
-
-            var CoOwnerData = await _unitOfWork.CoOwner.GetById(CoOwnerId);
-            if (CoOwnerData == null)
-                return BadRequest($"Unable to find a CoOwner with the Id: " + CoOwnerId);
-
-            CoOwnerData.Balance = AmmountPaid + CoOwnerData.Balance - CoOwnerData.MonthlyFee;
-
-            if (CoOwnerData.Balance < 0)
-                NewMonthDetail.IsPaid = "false";
-            else
-                NewMonthDetail.IsPaid = "true";
-
-            await _unitOfWork.MonthDetail.Add(NewMonthDetail);
-            await _unitOfWork.CoOwner.Update(CoOwnerData);
-
-            await _unitOfWork.CompleteAsync();
-
-            return Ok("Added successfully");
-
-
-        }
-        
-
+        public async Task<string> AddMonthDetail(int CoOwnerId, decimal AmmountPaid) => await _monthDetailService.AddMonthDetail(CoOwnerId, AmmountPaid);
+     
 
     }
 
