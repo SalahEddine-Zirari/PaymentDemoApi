@@ -2,6 +2,7 @@ global using PaymentDemoApi.Models;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
+global using Ardalis.GuardClauses;
 using PaymentDemoApi.Core.IConfiguration;
 using PaymentDemoApi.Core.Data;
 using PaymentDemoApi.Core.Services;

@@ -1,5 +1,7 @@
 ﻿using PaymentDemoApi.Core.IConfiguration;
 using PaymentDemoApi.Core.Services.Interfaces;
+using Ardalis.GuardClauses;
+
 
 namespace PaymentDemoApi.Core.Services
 {
@@ -14,6 +16,7 @@ namespace PaymentDemoApi.Core.Services
 
         public async Task<MonthDetail> GetTrasanction(int TransactionId)
         {
+            TransactionId = Guard.Against.NegativeOrZero(TransactionId);
             var RequestedTransaction = await _unitOfWork.MonthDetail.GetById(TransactionId);
 
             return RequestedTransaction;
@@ -22,18 +25,22 @@ namespace PaymentDemoApi.Core.Services
 
         public async Task<IEnumerable<MonthDetail>> GetByCoOwnerId(int CoOwnerId)
         {
+            CoOwnerId=Guard.Against.NegativeOrZero(CoOwnerId);
             var Rows = await _unitOfWork.MonthDetail.GetRowsByCoOwnerId(CoOwnerId);
 
             return Rows;
         }
         public async Task<string> AddMonthDetail(int CoOwnerId, decimal AmmountPaid)
         {
-            var NewMonthDetail = new MonthDetail();
+            CoOwnerId = Guard.Against.NegativeOrZero(CoOwnerId);
+            AmmountPaid = Guard.Against.Negative(AmmountPaid);
 
-
-            NewMonthDetail.CoOwnerId = CoOwnerId;
-            NewMonthDetail.MonthNum = int.Parse(DateTime.Now.ToString("MM"));
-            NewMonthDetail.AmmountPaid = AmmountPaid;
+            var NewMonthDetail = new MonthDetail
+            {
+                CoOwnerId = CoOwnerId,
+                MonthNum = int.Parse(DateTime.Now.ToString("MM")),
+                AmmountPaid = AmmountPaid
+            };
 
             var CoOwnerData = await _unitOfWork.CoOwner.GetById(CoOwnerId);
             if (CoOwnerData == null)

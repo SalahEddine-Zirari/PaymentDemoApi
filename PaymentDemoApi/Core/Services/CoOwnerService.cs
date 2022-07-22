@@ -18,12 +18,17 @@ namespace PaymentDemoApi.Core.Services
 
         public async Task<CoOwner> GetCoOwnerById(int CoOwnerId)
         {
+            CoOwnerId = Guard.Against.NegativeOrZero(CoOwnerId);
             var coOwner = await _unitOfWork.CoOwner.GetById(CoOwnerId);
             return coOwner;
         }
 
         public async Task<CoOwner> AddCoOwner(string name, decimal balance, decimal monthlyFee)
         {
+            name = Guard.Against.NullOrWhiteSpace(name);
+            balance = Guard.Against.Null(balance);
+            monthlyFee = Guard.Against.Null(monthlyFee);
+
             var coOwner = new CoOwner()
             {
                 Name = name,
@@ -39,6 +44,8 @@ namespace PaymentDemoApi.Core.Services
         }
         public async Task<string> DeleteCoOwner(int CoOwnerId)
         {
+
+            CoOwnerId=Guard.Against.NegativeOrZero(CoOwnerId);
             var CoOwner = await _unitOfWork.CoOwner.GetById(CoOwnerId);
 
             if (CoOwner == null)

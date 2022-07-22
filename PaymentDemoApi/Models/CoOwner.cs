@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Ardalis.GuardClauses;
 
 namespace PaymentDemoApi.Models
 {
@@ -20,6 +21,7 @@ namespace PaymentDemoApi.Models
             get => _monthlyFee; 
             set
             {
+                
                 if (value < 0)
                     throw new ArgumentOutOfRangeException(nameof(value)); 
 
